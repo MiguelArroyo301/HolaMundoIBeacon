@@ -11,29 +11,23 @@
 // --------------------------------------------------------------
 #include <bluefruit.h>
 
+#include "LED.h"
+#include "PuertoSerie.h"
+
 // --------------------------------------------------------------
 // --------------------------------------------------------------
 namespace Globales {
-  // Define hardware: LED and Button pins and states
-  const int LED_PIN = 7;
-  const int LED_OFF = LOW;
-  const int LED_ON = HIGH;
   
-  // Definicion de los pines UART
-  const int  RX_PIN  = 15;
-  const int  TX_PIN  = 17;
+  LED elLED ( /* NUMERO DEL PIN LED = */ 7 );
+
+  PuertoSerie elPuerto ( /* velocidad = */ 9600 ); // 115200
+
+  // Nota no sé qué es Serial1 en el ejemplo de Curro */
 };
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
 void inicializarPlaquita () {
-
-  Serial.begin(9600); // Serial is the USB serial port
-  Serial1.begin(9600); // Puerto serie hardware para comunicación con el sensor, 8 bit, o paority, 1 stop bit, 3.3V
-
-  // Turn on-board blue LED on
-  pinMode( Globales::LED_PIN, OUTPUT);
-  digitalWrite(Globales::LED_PIN, Globales::LED_ON);
 
 } // ()
 
@@ -89,12 +83,14 @@ void inicializarBluetooth () {
 // --------------------------------------------------------------
 void setup() {
 
+  Globales::elPuerto.escribir( " ---- setup () ---- \n " );
+
   inicializarPlaquita();
 
   inicializarBluetooth();
 
   // Suspend Loop() to save power
-  suspendLoop();
+  // suspendLoop();
 
 } // setup ()
 
@@ -102,6 +98,10 @@ void setup() {
 // loop() : no hace nada
 // --------------------------------------------------------------
 void loop() { 
+
+  Globales::elLED.brillar( 200 );
+
+  esperar ( 500 );
 
   
 } // loop ()

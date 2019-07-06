@@ -23,7 +23,7 @@ namespace Globales {
 
   PuertoSerie elPuerto ( /* velocidad = */ 9600 ); // 115200
 
-  // Nota no sé qué es Serial1 en el ejemplo de Curro */
+  // Serial1 en el ejemplo de Curro creo que es la conexión placa-sensor 
 };
 
 // --------------------------------------------------------------
@@ -49,15 +49,18 @@ namespace Globales {
 // --------------------------------------------------------------
 void inicializarBluetooth () {
 
-
+  /*
   uint8_t beaconUUID[16] = { 
 	'E', 'P', 'S', 'G', '-', 'G', 'T', 'I', 
 	'-', 'P', 'R', 'O', 'Y', '-', '3', 'A'
 	};
+  */
+
+  uint8_t beaconUUID[16+1] = "EPSG-GTI-PROY-3A"; 
 
   Globales::laEmisora.emitirBeacon( beaconUUID, // beacon UUID
-						  0x03, // major
-						  0x04 // minor
+									-16, // 0x12, // major
+									1234	// 0x34 // minor
 						  );
   
 } // ()
@@ -67,8 +70,6 @@ void inicializarBluetooth () {
 // --------------------------------------------------------------
 void setup() {
 
-  Globales::elPuerto.escribir( " ---- setup () ---- \n " );
-
   inicializarPlaquita();
 
   inicializarBluetooth();
@@ -76,17 +77,35 @@ void setup() {
   // Suspend Loop() to save power
   // suspendLoop();
 
+  Globales::elPuerto.escribir( "---- setup(): fin ---- \n " );
+
 } // setup ()
 
 // --------------------------------------------------------------
-// loop() : no hace nada
+// loop ()
 // --------------------------------------------------------------
-void loop() { 
+namespace Loop {
+  int i = 0;
+};
 
-  Globales::elLED.brillar( 200 );
+// ..............................................................
+// ..............................................................
+void loop() {
 
+  using namespace Loop;
+
+  Globales::elLED.brillar( 500 );
   esperar ( 500 );
+  Globales::elLED.brillar( 500 );
+  esperar ( 500 );
+  Globales::elLED.brillar( 500 );
 
+  esperar ( 1000 );
+
+  i++;
+  Globales::elPuerto.escribir( "---- loop(): fin " );
+  Globales::elPuerto.escribir( i );
+  Globales::elPuerto.escribir( "\n" );
   
 } // loop ()
 // --------------------------------------------------------------

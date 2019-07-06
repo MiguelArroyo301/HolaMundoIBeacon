@@ -12,8 +12,7 @@ public:
   // .........................................................
   // .........................................................
   PuertoSerie (long baudios) {
-	Serial.begin(baudios);
-	//	Serial1.begin(baudios);
+	Serial.begin( baudios );
   } // ()
 
   // .........................................................
@@ -21,7 +20,6 @@ public:
   template<typename T>
   void escribir (T mensaje) {
 	Serial.print( mensaje );
-		//Serial1.print( mensaje );
   } // ()
   
 }; // class PuertoSerie

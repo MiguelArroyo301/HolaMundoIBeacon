@@ -33,7 +33,8 @@ public:
 	
   // .........................................................
   // .........................................................
-  void emitirBeacon( uint8_t * beaconUUID, int major, int minor ) {
+  // void emitirBeacon( uint8_t * beaconUUID, int major, int minor ) {
+  void emitirBeacon( uint8_t * beaconUUID, int16_t major, int16_t minor ) {
 
 	//
 	//

@@ -11,9 +11,10 @@
 // --------------------------------------------------------------
 #include <bluefruit.h>
 
+// --------------------------------------------------------------
+// --------------------------------------------------------------
 #include "LED.h"
 #include "PuertoSerie.h"
-#include "EmisoraBLE.h"
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
@@ -28,6 +29,12 @@ namespace Globales {
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
+#include "EmisoraBLE.h"
+#include "Publicador.h"
+
+
+// --------------------------------------------------------------
+// --------------------------------------------------------------
 void inicializarPlaquita () {
 
 } // ()
@@ -36,50 +43,45 @@ void inicializarPlaquita () {
 // --------------------------------------------------------------
 namespace Globales {
 
-  EmisoraBLE laEmisora(
-					   "GTI 3A", // nombreEmisora
-					   0x004c, // fabricanteID (Apple)
-					   -73, // rssi
-					   4 // txPower
-					   );
+  // Publicador elPublicador( "GTI-3A" );
+  Publicador elPublicador;
 
 }; // namespace
 
-// --------------------------------------------------------------
-// --------------------------------------------------------------
-void inicializarBluetooth () {
-
-  /*
-  uint8_t beaconUUID[16] = { 
-	'E', 'P', 'S', 'G', '-', 'G', 'T', 'I', 
-	'-', 'P', 'R', 'O', 'Y', '-', '3', 'A'
-	};
-  */
-
-  uint8_t beaconUUID[16+1] = "EPSG-GTI-PROY-3A"; 
-
-  Globales::laEmisora.emitirBeacon( beaconUUID, // beacon UUID
-									-16, // 0x12, // major
-									1234	// 0x34 // minor
-						  );
-  
-} // ()
 
 // --------------------------------------------------------------
 // Setup: inicializa BLE, crea semáforos y tareas, asigna funciones de callback
 // --------------------------------------------------------------
 void setup() {
 
-  inicializarPlaquita();
+  esperar( 1000 );
 
-  inicializarBluetooth();
+  inicializarPlaquita();
 
   // Suspend Loop() to save power
   // suspendLoop();
 
+  Globales::elPublicador.laEmisora.encenderEmisora();
+
+  // Globales::elPublicador.laEmisora.pruebaEmision();
+
   Globales::elPuerto.escribir( "---- setup(): fin ---- \n " );
 
+
 } // setup ()
+
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+void lucecitas() {
+  Globales::elLED.brillar( 100 ); // 100 encendido
+  esperar ( 400 ); //  100 apagado
+  Globales::elLED.brillar( 100 ); // 100 encendido
+  esperar ( 400 ); //  100 apagado
+  Globales::elLED.brillar( 100 ); // 100 encendido
+  esperar ( 400 ); //  100 apagado
+  Globales::elLED.brillar( 1000 ); // 1000 encendido
+  esperar ( 1000 ); //  100 apagado
+} // ()
 
 // --------------------------------------------------------------
 // loop ()
@@ -90,20 +92,32 @@ namespace Loop {
 
 // ..............................................................
 // ..............................................................
-void loop() {
+void loop () {
 
   using namespace Loop;
 
-  Globales::elLED.brillar( 500 );
-  esperar ( 500 );
-  Globales::elLED.brillar( 500 );
-  esperar ( 500 );
-  Globales::elLED.brillar( 500 );
-
-  esperar ( 1000 );
-
   i++;
-  Globales::elPuerto.escribir( "---- loop(): fin " );
+
+  Globales::elPuerto.escribir( "\n---- loop(): empieza " );
+  Globales::elPuerto.escribir( i );
+  Globales::elPuerto.escribir( "\n" );
+
+  lucecitas();
+
+  int valorCO2 = 234; // medirlo verdaderamente !
+  
+  Globales::elPublicador.publicarCO2( valorCO2,
+									  1000 // intervalo de emisión
+									  );
+  
+  int valorTemperatura = -15; // medirlo verdaderamente !
+  
+  Globales::elPublicador.publicarTemperatura( valorTemperatura, 
+											  1000 // intervalo de emisión
+											  );
+  
+  
+  Globales::elPuerto.escribir( "---- loop(): acaba **** " );
   Globales::elPuerto.escribir( i );
   Globales::elPuerto.escribir( "\n" );
   

@@ -29,17 +29,14 @@ public:
   // .........................................................
   // .........................................................
   void encender () {
-	// digitalWrite(numeroLED, HIGH); 
-	// encender en ESP8266 es al revés
-	digitalWrite(numeroLED, LOW); 
+	digitalWrite(numeroLED, HIGH); 
 	encendido = true;
   }
 
   // .........................................................
   // .........................................................
   void apagar () {
-	// digitalWrite(numeroLED, LOW); // Turn off LED
-	  digitalWrite(numeroLED, HIGH); // Turn off LED
+	  digitalWrite(numeroLED, LOW);
 	  encendido = false;
   }
 

@@ -32,10 +32,11 @@ namespace Globales {
 #include "EmisoraBLE.h"
 #include "Publicador.h"
 
-
 // --------------------------------------------------------------
 // --------------------------------------------------------------
 void inicializarPlaquita () {
+
+  // de momento nada
 
 } // ()
 
@@ -43,7 +44,6 @@ void inicializarPlaquita () {
 // --------------------------------------------------------------
 namespace Globales {
 
-  // Publicador elPublicador( "GTI-3A" );
   Publicador elPublicador;
 
 }; // namespace
@@ -61,12 +61,18 @@ void setup() {
   // Suspend Loop() to save power
   // suspendLoop();
 
-  Globales::elPublicador.laEmisora.encenderEmisora();
+  // 
+  // 
+  // 
+  Globales::elPublicador.encenderEmisora();
+  
 
   // Globales::elPublicador.laEmisora.pruebaEmision();
 
-  Globales::elPuerto.escribir( "---- setup(): fin ---- \n " );
 
+  esperar( 1000 );
+
+  Globales::elPuerto.escribir( "---- setup(): fin ---- \n " );
 
 } // setup ()
 
@@ -87,7 +93,7 @@ void lucecitas() {
 // loop ()
 // --------------------------------------------------------------
 namespace Loop {
-  int i = 0;
+  uint8_t cont = 0;
 };
 
 // ..............................................................
@@ -96,29 +102,37 @@ void loop () {
 
   using namespace Loop;
 
-  i++;
+  cont++;
 
   Globales::elPuerto.escribir( "\n---- loop(): empieza " );
-  Globales::elPuerto.escribir( i );
+  Globales::elPuerto.escribir( cont );
   Globales::elPuerto.escribir( "\n" );
 
   lucecitas();
 
+  // 
+  // 
+  // 
   int valorCO2 = 234; // medirlo verdaderamente !
   
   Globales::elPublicador.publicarCO2( valorCO2,
+									  cont,
 									  1000 // intervalo de emisión
 									  );
   
+  // 
+  // 
+  // 
   int valorTemperatura = -15; // medirlo verdaderamente !
   
   Globales::elPublicador.publicarTemperatura( valorTemperatura, 
+											  cont,
 											  1000 // intervalo de emisión
 											  );
   
   
   Globales::elPuerto.escribir( "---- loop(): acaba **** " );
-  Globales::elPuerto.escribir( i );
+  Globales::elPuerto.escribir( cont );
   Globales::elPuerto.escribir( "\n" );
   
 } // loop ()

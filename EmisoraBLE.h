@@ -136,12 +136,14 @@ public:
   // 0x01, // este es el byte 31 = BLE_GAP_ADV_SET_DATA_SIZE_MAX, parece que sobra
   //
   // .........................................................
+  // Para enviar como carga libre los últimos 21 bytes de un iBeacon (lo que normalmente sería uuid-16 major-2 minor-2 txPower-1)
+  // .........................................................
   void emitirAnuncioIBeaconLibre( const char * carga, const uint8_t tamanyoCarga ) {
 
 	(*this).detenerAnuncio(); 
 
 	Bluefruit.Advertising.clearData();
-	Bluefruit.ScanResponse.clearData();
+	Bluefruit.ScanResponse.clearData(); // hace falta?
 
 	// Bluefruit.setTxPower( (*this).txPower );
 	Bluefruit.setName( (*this).nombreEmisora );
@@ -149,8 +151,10 @@ public:
 
 	Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
 
-	// hasta ahora habrá, supongo, ya puestos los 5 primeros bytes
-
+	//
+	// hasta ahora habrá, supongo, ya puestos los 5 primeros bytes. Efectivamente.
+	// Falta poner 4 bytes fijos (company ID, beacon type, longitud) y 21 de carga
+	//
 	uint8_t restoPrefijoYCarga[4+21] = {
 	  0x4c, 0x00, // companyID 2
 	  0x02, // ibeacon type 1byte
@@ -163,14 +167,21 @@ public:
 	  '-'
 	};
 
+	//
+	// addData() hay que usarlo sólo una vez. Por eso copio la carga
+	// en el anterior array, donde he dejado 21 sitios libres
+	//
 	memcpy( &restoPrefijoYCarga[4], &carga[0], ( tamanyoCarga > 21 ? 21 : tamanyoCarga ) ); 
 
+	//
+	// copio la carga para emitir
+	//
 	Bluefruit.Advertising.addData( BLE_GAP_AD_TYPE_MANUFACTURER_SPECIFIC_DATA,
 								   &restoPrefijoYCarga[0],
 								   4+21 );
 
 	//
-	// ? qué valores poner aquí
+	// ? qué valores poner aquí ?
 	//
 	Bluefruit.Advertising.restartOnDisconnect(true);
 	Bluefruit.Advertising.setInterval(100, 100);    // in unit of 0.625 ms
@@ -182,94 +193,12 @@ public:
 	Bluefruit.Advertising.start( 0 ); 
   } // ()
 
-  /*
-  // .........................................................
-  // .........................................................
-  void pruebaEmision() {
-
-	Globales::elPuerto.escribir( "     prueba emision \n"  );
-
-	(*this).detenerAnuncio(); // OK
-
-	uint8_t beaconUUID[16] = { 
-	  'E', 'P', 'S', 'G', '-', 'G', 'T', 'I', 
-	  '-', 'P', 'R', 'O', 'Y', '-', '3', 'A'
-	};
-	BLEBeacon elBeacon( beaconUUID, 45, 67,  1234 );
-
-	// Bluefruit.begin(); // ???? 
-
-	Bluefruit.setTxPower( (*this).txPower ); // OK
-	Bluefruit.setName( (*this).nombreEmisora ); // OK
-	elBeacon.setManufacturer( (*this).fabricanteID ); // OK
-	Bluefruit.Advertising.setBeacon( elBeacon ); // OK
-
-	Bluefruit.Advertising.start( 0 ); // ????
-	Globales::elPuerto.escribir( "     prueba emision started \n"  );
-
-	esperar( 3000 );
-
-	detenerAnuncio ();
-	Globales::elPuerto.escribir( "     prueba emision stoped \n"  );
-  }
-  */
-
 }; // class
-// ----------------------------------------------------------
-// ----------------------------------------------------------
-// ----------------------------------------------------------
-// ----------------------------------------------------------
+
 #endif
 
-/*
-  // void emitirBeacon( uint8_t * beaconUUID, int16_t major, int16_t minor, int tiempoEmision = 0 ) {
-  void emitirBeacon( uint8_t * beaconUUID, int16_t major, int16_t minor ) {
+// ----------------------------------------------------------
+// ----------------------------------------------------------
+// ----------------------------------------------------------
+// ----------------------------------------------------------
 
-	//
-	//
-	//
-	(*this).detenerAnuncio();
-	
-	//
-	//
-	//
-	BLEBeacon elBeacon( beaconUUID, major, minor, (*this).rssi );
-	  
-	//
-	//
-	//
-	Bluefruit.begin();
-	  
-	Bluefruit.autoConnLed( false );
-	Bluefruit.setTxPower( (*this).txPower );
-	Bluefruit.setName( (*this).nombreEmisora );
-	elBeacon.setManufacturer( (*this).fabricanteID );
-	Bluefruit.ScanResponse.addName();
-	Bluefruit.Advertising.setBeacon( elBeacon );
-
-	
-	Bluefruit.Advertising.restartOnDisconnect( true );
-
-
-	// habría que añadir parámetros para configurar estos valores
-	 ORIGINALMENTE 
-	Bluefruit.Advertising.setInterval(160, 160);    // in unit of 0.625 ms
-	Bluefruit.Advertising.setFastTimeout(15);      // number of seconds in fast mode
-	Bluefruit.Advertising.start( 0  );
-	
-
-	// void setInterval  (uint16_t fast, uint16_t slow);
-	Bluefruit.Advertising.setInterval(3, 3);    // in unit of 0.625 ms
-
-	Bluefruit.Advertising.setFastTimeout(1);      // number of seconds in fast mode
-	Bluefruit.Advertising.start( 3 );
-	// tiempoEmision
-	// 0 = Don't stop advertising after n seconds, ver valor por defecto
-
-	esperar( 1100 );
-
-	Bluefruit.Advertising.stop();
-
-  } // ()
-  
-*/

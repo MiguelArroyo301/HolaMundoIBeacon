@@ -16,16 +16,15 @@ private:
 	'-', 'P', 'R', 'O', 'Y', '-', '3', 'A'
 	};
 
-
   // .........................................................
   // .........................................................
-  EmisoraBLE laEmisora{ 
-						  "GTI-3A",
-						  0x004c, // fabricanteID (Apple)
-						  4 // txPower
-							};
-
-  const int RSSI = -53;
+  EmisoraBLE laEmisora {
+	"GTI-3A", //  nombre emisora
+	  0x004c, // fabricanteID (Apple)
+	  4 // txPower
+	  };
+  
+  const int RSSI = -53; // por poner algo, de momento no lo uso
 
   // .........................................................
   // .........................................................
@@ -39,12 +38,11 @@ public:
 	RUIDO = 13
   };
 
-
   // .........................................................
   // .........................................................
   Publicador( ) {
 	// ATENCION: no hacerlo aquí. (*this).laEmisora.encenderEmisora();
-	// Pondremos un método para llamarlo desde el setup
+	// Pondremos un método para llamarlo desde el setup() más tarde
   } // ()
 
   // .........................................................
@@ -57,6 +55,9 @@ public:
   // .........................................................
   void publicarCO2( int16_t valorCO2, uint8_t contador, long tiempoEspera ) {
 
+	//
+	// 1. empezamos anuncio
+	//
 	uint16_t major = (MedicionesID::CO2 << 8) + contador;
 	(*this).laEmisora.emitirAnuncioIBeacon( (*this).beaconUUID, 
 											major,
@@ -64,6 +65,7 @@ public:
 											(*this).RSSI // rssi
 									);
 
+	/*
 	Globales::elPuerto.escribir( "   publicarCO2(): valor=" );
 	Globales::elPuerto.escribir( valorCO2 );
 	Globales::elPuerto.escribir( "   contador=" );
@@ -71,8 +73,16 @@ public:
 	Globales::elPuerto.escribir( "   todo="  );
 	Globales::elPuerto.escribir( major );
 	Globales::elPuerto.escribir( "\n" );
+	*/
+
+	//
+	// 2. esperamos el tiempo que nos digan
+	//
 	esperar( tiempoEspera );
 
+	//
+	// 3. paramos anuncio
+	//
 	(*this).laEmisora.detenerAnuncio();
   } // ()
 
@@ -80,8 +90,9 @@ public:
   // .........................................................
   void publicarTemperatura( int16_t valorTemperatura, uint8_t contador, long tiempoEspera ) {
 
+	uint16_t major = (MedicionesID::TEMPERATURA << 8) + contador;
 	(*this).laEmisora.emitirAnuncioIBeacon( (*this).beaconUUID, 
-											(MedicionesID::TEMPERATURA << 8) + contador, // major
+											major,
 											valorTemperatura, // minor
 											(*this).RSSI // rssi
 									);

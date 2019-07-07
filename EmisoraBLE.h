@@ -6,6 +6,9 @@
 // fuente: https://www.instructables.com/id/Beaconeddystone-and-Adafruit-NRF52-Advertise-Your-/
 // https://github.com/nkolban/ESP32_BLE_Arduino/blob/master/src/BLEBeacon.h
 
+// https://os.mbed.com/blog/entry/BLE-Beacons-URIBeacon-AltBeacons-iBeacon/
+// https://learn.adafruit.com/bluefruit-nrf52-feather-learning-guide/bleadvertising
+
 // ------------------------------------------------------
 // ------------------------------------------------------
 class EmisoraBLE {
@@ -31,46 +34,20 @@ public:
   // .........................................................
   // .........................................................
   void encenderEmisora() {
-	 Bluefruit.begin(); // parece que esto fastidia el asunto
-
-  }
+	 Bluefruit.begin(); 
+  } // ()
 
   // .........................................................
   // .........................................................
   void detenerAnuncio() {
-	Bluefruit.Advertising.stop(); // OK
-  } // 
-
+	Bluefruit.Advertising.stop(); 
+  }  // ()
   
   // .........................................................
   // .........................................................
-  void pruebaEmision() {
-
-	Globales::elPuerto.escribir( "     prueba emision \n"  );
-
-	(*this).detenerAnuncio(); // OK
-
-	uint8_t beaconUUID[16] = { 
-	  'E', 'P', 'S', 'G', '-', 'G', 'T', 'I', 
-	  '-', 'P', 'R', 'O', 'Y', '-', '3', 'A'
-	};
-	BLEBeacon elBeacon( beaconUUID, 45, 67,  1234 );
-
-	// Bluefruit.begin(); // ???? 
-
-	Bluefruit.setTxPower( (*this).txPower ); // OK
-	Bluefruit.setName( (*this).nombreEmisora ); // OK
-	elBeacon.setManufacturer( (*this).fabricanteID ); // OK
-	Bluefruit.Advertising.setBeacon( elBeacon ); // OK
-
-	Bluefruit.Advertising.start( 0 ); // ????
-	Globales::elPuerto.escribir( "     prueba emision started \n"  );
-
-	esperar( 3000 );
-
-	detenerAnuncio ();
-	Globales::elPuerto.escribir( "     prueba emision stoped \n"  );
-  }
+  bool estaAnunciando() {
+	return Bluefruit.Advertising.isRunning();
+  } // ()
 
   // .........................................................
   // .........................................................
@@ -82,22 +59,23 @@ public:
 	(*this).detenerAnuncio();
 	
 	//
-	//
+	// creo el beacon 
 	//
 	BLEBeacon elBeacon( beaconUUID, major, minor, rssi );
-
 	elBeacon.setManufacturer( (*this).fabricanteID );
 
+	//
+	// parece que esto debe ponerse todo aquí
+	//
+
 	Bluefruit.setTxPower( (*this).txPower );
-	// Bluefruit.setName( (*this).nombreEmisora );
-	Bluefruit.setName( "VAGO" );
+	Bluefruit.setName( (*this).nombreEmisora );
 	Bluefruit.ScanResponse.addName(); // para que envíe el nombre de emisora (?!)
 
 	//
-	//
+	// pongo el beacon
 	//
 	Bluefruit.Advertising.setBeacon( elBeacon );
-
 
 	//
 	// ? qué valorers poner aquí
@@ -105,15 +83,18 @@ public:
 	Bluefruit.Advertising.setInterval(100, 100);    // in unit of 0.625 ms
 
 	//
-	//
+	// empieza el anuncio, 0 = tiempo indefinido (ya lo pararán)
 	//
 	Bluefruit.Advertising.start( 0 ); 
 	
   } // ()
 
+  /*
   // .........................................................
   // .........................................................
   void emitirAnuncioIBeaconIntentandoPonerMasDatos( uint8_t * beaconUUID, int16_t major, int16_t minor, uint8_t rssi ) {
+
+// https://github.com/adafruit/Adafruit_nRF52_Arduino/issues/197 (?)
 
 	//
 	//
@@ -144,9 +125,7 @@ public:
 
 	Bluefruit.Advertising.setData( &datos2[0], 6 );
 
-	/*
-	Bluefruit.Advertising.addFlags( 0xCC );
-	*/
+	// Bluefruit.Advertising.addFlags( 0xCC );
 
 	// Bluefruit.Advertising.setInterval(100, 100);    // in unit of 0.625 ms
 	Bluefruit.Advertising.setInterval(160, 160);    // in unit of 0.625 ms
@@ -157,12 +136,40 @@ public:
 	Bluefruit.Advertising.start( 0 ); 
 	
   } // ()
+*/
   
+
+  /*
   // .........................................................
   // .........................................................
-  bool estaAnunciando() {
-	return Bluefruit.Advertising.isRunning();
-  } // ()
+  void pruebaEmision() {
+
+	Globales::elPuerto.escribir( "     prueba emision \n"  );
+
+	(*this).detenerAnuncio(); // OK
+
+	uint8_t beaconUUID[16] = { 
+	  'E', 'P', 'S', 'G', '-', 'G', 'T', 'I', 
+	  '-', 'P', 'R', 'O', 'Y', '-', '3', 'A'
+	};
+	BLEBeacon elBeacon( beaconUUID, 45, 67,  1234 );
+
+	// Bluefruit.begin(); // ???? 
+
+	Bluefruit.setTxPower( (*this).txPower ); // OK
+	Bluefruit.setName( (*this).nombreEmisora ); // OK
+	elBeacon.setManufacturer( (*this).fabricanteID ); // OK
+	Bluefruit.Advertising.setBeacon( elBeacon ); // OK
+
+	Bluefruit.Advertising.start( 0 ); // ????
+	Globales::elPuerto.escribir( "     prueba emision started \n"  );
+
+	esperar( 3000 );
+
+	detenerAnuncio ();
+	Globales::elPuerto.escribir( "     prueba emision stoped \n"  );
+  }
+  */
 
 }; // class
 

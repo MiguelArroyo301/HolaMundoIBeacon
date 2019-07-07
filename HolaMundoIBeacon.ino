@@ -31,6 +31,7 @@ namespace Globales {
 // --------------------------------------------------------------
 #include "EmisoraBLE.h"
 #include "Publicador.h"
+#include "Medidor.h"
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
@@ -45,6 +46,8 @@ void inicializarPlaquita () {
 namespace Globales {
 
   Publicador elPublicador;
+
+  Medidor elMedidor;
 
 }; // namespace
 
@@ -65,11 +68,18 @@ void setup() {
   // 
   // 
   Globales::elPublicador.encenderEmisora();
-  
 
   // Globales::elPublicador.laEmisora.pruebaEmision();
+  
+  // 
+  // 
+  // 
+  Globales::elMedidor.iniciarMedidor();
 
 
+  // 
+  // 
+  // 
   esperar( 1000 );
 
   Globales::elPuerto.escribir( "---- setup(): fin ---- \n " );
@@ -101,39 +111,42 @@ namespace Loop {
 void loop () {
 
   using namespace Loop;
+  using namespace Globales;
 
   cont++;
 
-  Globales::elPuerto.escribir( "\n---- loop(): empieza " );
-  Globales::elPuerto.escribir( cont );
-  Globales::elPuerto.escribir( "\n" );
+  elPuerto.escribir( "\n---- loop(): empieza " );
+  elPuerto.escribir( cont );
+  elPuerto.escribir( "\n" );
 
   lucecitas();
 
   // 
   // 
   // 
-  int valorCO2 = 234; // medirlo verdaderamente !
+  int valorCO2 = elMedidor.medirCO2();
   
-  Globales::elPublicador.publicarCO2( valorCO2,
-									  cont,
-									  1000 // intervalo de emisión
-									  );
+  elPublicador.publicarCO2( valorCO2,
+							cont,
+							1000 // intervalo de emisión
+							);
   
   // 
   // 
   // 
-  int valorTemperatura = -15; // medirlo verdaderamente !
+  int valorTemperatura = elMedidor.medirTemperatura();
   
-  Globales::elPublicador.publicarTemperatura( valorTemperatura, 
-											  cont,
-											  1000 // intervalo de emisión
-											  );
+  elPublicador.publicarTemperatura( valorTemperatura, 
+									cont,
+									1000 // intervalo de emisión
+									);
   
-  
-  Globales::elPuerto.escribir( "---- loop(): acaba **** " );
-  Globales::elPuerto.escribir( cont );
-  Globales::elPuerto.escribir( "\n" );
+  // 
+  // 
+  // 
+  elPuerto.escribir( "---- loop(): acaba **** " );
+  elPuerto.escribir( cont );
+  elPuerto.escribir( "\n" );
   
 } // loop ()
 // --------------------------------------------------------------

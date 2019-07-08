@@ -33,6 +33,7 @@ public:
 	fabricanteID( fabricanteID_ ) ,
 	txPower( txPower_ )
   {
+	// no encender ahora la emisora
   } // ()
 	
   // .........................................................

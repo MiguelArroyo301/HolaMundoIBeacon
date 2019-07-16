@@ -90,10 +90,12 @@ void setup() {
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
-void lucecitas() {
-  Globales::elLED.brillar( 100 ); // 100 encendido
+inline void lucecitas() {
+  using namespace Globales;
+
+  elLED.brillar( 100 ); // 100 encendido
   esperar ( 400 ); //  100 apagado
-  Globales::elLED.brillar( 100 ); // 100 encendido
+  elLED.brillar( 100 ); // 100 encendido
   esperar ( 400 ); //  100 apagado
   Globales::elLED.brillar( 100 ); // 100 encendido
   esperar ( 400 ); //  100 apagado

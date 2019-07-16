@@ -7,6 +7,9 @@
 #ifndef EMISORA_H_INCLUIDO
 #define EMISORA_H_INCLUIDO
 
+// Buena introducción: https://learn.adafruit.com/introduction-to-bluetooth-low-energy/gap
+// https://os.mbed.com/blog/entry/BLE-Beacons-URIBeacon-AltBeacons-iBeacon/
+
 // fuente: https://www.instructables.com/id/Beaconeddystone-and-Adafruit-NRF52-Advertise-Your-/
 // https://github.com/nkolban/ESP32_BLE_Arduino/blob/master/src/BLEBeacon.h
 

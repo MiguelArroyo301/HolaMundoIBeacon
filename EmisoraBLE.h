@@ -18,6 +18,10 @@
 
 // ----------------------------------------------------------
 // ----------------------------------------------------------
+#include "ServicioEnEmisora.h"
+
+// ----------------------------------------------------------
+// ----------------------------------------------------------
 class EmisoraBLE {
 private:
 
@@ -29,6 +33,11 @@ public:
 
   // .........................................................
   // .........................................................
+  using CallbackConexionEstablecida = void ( uint16_t connHandle );
+  using CallbackConexionTerminada = void ( uint16_t connHandle, uint8_t reason);
+
+  // .........................................................
+  // .........................................................
   EmisoraBLE( const char * nombreEmisora_, const uint16_t fabricanteID_,
 			  const int8_t txPower_ ) 
 	:
@@ -36,19 +45,62 @@ public:
 	fabricanteID( fabricanteID_ ) ,
 	txPower( txPower_ )
   {
-	// no encender ahora la emisora
+	// no encender ahora la emisora, tal vez sea por el println()
+	// que hace que todo falle si lo llamo en el contructor
+	// ( = antes que configuremos Serial )
+	// No parece que sea por el println,
+	// por tanto NO_encenderEmisora();
   } // ()
+
+  // .........................................................
+  // .........................................................
+  /* creo que no me sirve esta versión porque parece
+	 que no se instalen los callbacks si la emisora no está encendida,
+	 pero no la puedo encender en el constructor 
+  EmisoraBLE( const char * nombreEmisora_, const uint16_t fabricanteID_,
+			  const int8_t txPower_,
+			  CallbackConexionEstablecida cbce,
+			  CallbackConexionTerminada cbct
+			  ) 
+	:
+	EmisoraBLE ( nombreEmisora_, fabricanteID_, txPower_ )
+  {
+	instalarCallbackConexionEstablecida( cbce );
+	instalarCallbackConexionTerminada( cbct );
+  } // ()
+  */
 	
   // .........................................................
   // .........................................................
   void encenderEmisora() {
+	// Serial.println ( "Bluefruit.begin() " );
 	 Bluefruit.begin(); 
+
+	 // por si acaso:
+	 (*this).detenerAnuncio();
+  } // ()
+
+  // .........................................................
+  // .........................................................
+  void encenderEmisora( CallbackConexionEstablecida cbce,
+						CallbackConexionTerminada cbct ) {
+
+	encenderEmisora();
+
+	instalarCallbackConexionEstablecida( cbce );
+	instalarCallbackConexionTerminada( cbct );
+
   } // ()
 
   // .........................................................
   // .........................................................
   void detenerAnuncio() {
-	Bluefruit.Advertising.stop(); 
+
+	if ( (*this).estaAnunciando() ) {
+	  // Serial.println ( "Bluefruit.Advertising.stop() " );
+	  Bluefruit.Advertising.stop(); 
+	}
+
   }  // ()
   
   // .........................................................
@@ -149,11 +201,14 @@ public:
 	Bluefruit.Advertising.clearData();
 	Bluefruit.ScanResponse.clearData(); // hace falta?
 
-	// Bluefruit.setTxPower( (*this).txPower );
+	// Bluefruit.setTxPower( (*this).txPower ); creo que no lo pongo porque es uno de los bytes de la parte de carga que utilizo
 	Bluefruit.setName( (*this).nombreEmisora );
 	Bluefruit.ScanResponse.addName();
 
 	Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE);
+
+	// con este parece que no va  !
+	// Bluefruit.Advertising.addFlags(BLE_GAP_ADV_FLAG_LE_GENERAL_DISC_MODE);
 
 	//
 	// hasta ahora habrá, supongo, ya puestos los 5 primeros bytes. Efectivamente.
@@ -195,6 +250,77 @@ public:
 	// empieza el anuncio, 0 = tiempo indefinido (ya lo pararán)
 	//
 	Bluefruit.Advertising.start( 0 ); 
+
+	Globales::elPuerto.escribir( "emitiriBeacon libre  Bluefruit.Advertising.start( 0 );  ");
+  } // ()
+
+  // .........................................................
+  // .........................................................
+  bool anyadirServicio( ServicioEnEmisora & servicio ) {
+
+	Globales::elPuerto.escribir( " Bluefruit.Advertising.addService( servicio ); ");
+
+	bool r = Bluefruit.Advertising.addService( servicio );
+
+	if ( ! r ) {
+	  Serial.println( " SERVICION NO AÑADIDO ");
+	}
+	
+
+	return r;
+	 // nota: uso conversión de tipo de servicio (ServicioEnEmisora) a BLEService
+	 // para addService()
+  } // ()
+
+  
+  // .........................................................
+  // .........................................................
+  bool anyadirServicioConSusCaracteristicas( ServicioEnEmisora & servicio ) { 
+	return (*this).anyadirServicio( servicio );
+  } // 
+
+  // .........................................................
+  template <typename ... T>
+  bool anyadirServicioConSusCaracteristicas( ServicioEnEmisora & servicio,
+											 ServicioEnEmisora::Caracteristica & caracteristica,
+											 T& ... restoCaracteristicas) {
+
+	servicio.anyadirCaracteristica( caracteristica );
+
+	return anyadirServicioConSusCaracteristicas( servicio, restoCaracteristicas... );
+	
+  } // ()
+
+  // .........................................................
+  template <typename ... T>
+  bool anyadirServicioConSusCaracteristicasYActivar( ServicioEnEmisora & servicio,
+													 // ServicioEnEmisora::Caracteristica & caracteristica,
+													 T& ... restoCaracteristicas) {
+
+	bool r = anyadirServicioConSusCaracteristicas( servicio, restoCaracteristicas... );
+
+	servicio.activarServicio();
+
+	return r;
+	
+  } // ()
+
+  // .........................................................
+  // .........................................................
+  void instalarCallbackConexionEstablecida( CallbackConexionEstablecida cb ) {
+	Bluefruit.Periph.setConnectCallback( cb );
+  } // ()
+
+  // .........................................................
+  // .........................................................
+  void instalarCallbackConexionTerminada( CallbackConexionTerminada cb ) {
+	Bluefruit.Periph.setDisconnectCallback( cb );
+  } // ()
+
+  // .........................................................
+  // .........................................................
+  BLEConnection * getConexion( uint16_t connHandle ) {
+	return Bluefruit.Connection( connHandle );
   } // ()
 
 }; // class

@@ -3,6 +3,7 @@
 // --------------------------------------------------------------
 //
 // Jordi Bataller i Mascarell
+// 2019-07-07
 //
 // --------------------------------------------------------------
 
@@ -13,6 +14,9 @@
 // --------------------------------------------------------------
 // --------------------------------------------------------------
 #include <bluefruit.h>
+
+#undef min // vaya tela, están definidos en bluefruit.h y  !
+#undef max // colisionan con los de la biblioteca estándar
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
@@ -25,7 +29,7 @@ namespace Globales {
   
   LED elLED ( /* NUMERO DEL PIN LED = */ 7 );
 
-  PuertoSerie elPuerto ( /* velocidad = */ 9600 ); // 115200
+  PuertoSerie elPuerto ( /* velocidad = */ 115200 ); // 115200 o 9600 o ...
 
   // Serial1 en el ejemplo de Curro creo que es la conexión placa-sensor 
 };
@@ -36,13 +40,6 @@ namespace Globales {
 #include "Publicador.h"
 #include "Medidor.h"
 
-// --------------------------------------------------------------
-// --------------------------------------------------------------
-void inicializarPlaquita () {
-
-  // de momento nada
-
-} // ()
 
 // --------------------------------------------------------------
 // --------------------------------------------------------------
@@ -54,14 +51,24 @@ namespace Globales {
 
 }; // namespace
 
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+void inicializarPlaquita () {
+
+  // de momento nada
+
+} // ()
 
 // --------------------------------------------------------------
-// Setup: inicializa BLE, crea semáforos y tareas, asigna funciones de callback
+// setup()
 // --------------------------------------------------------------
 void setup() {
 
-  esperar( 1000 );
+  Globales::elPuerto.esperarDisponible();
 
+  // 
+  // 
+  // 
   inicializarPlaquita();
 
   // Suspend Loop() to save power

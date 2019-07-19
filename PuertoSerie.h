@@ -18,7 +18,17 @@ public:
   // .........................................................
   PuertoSerie (long baudios) {
 	Serial.begin( baudios );
-	// mejor no poner esto: while ( !Serial ) delay(10);   
+	// mejor no poner esto aquí: while ( !Serial ) delay(10);   
+  } // ()
+
+  // .........................................................
+  // .........................................................
+  void esperarDisponible() {
+
+	while ( !Serial ) {
+	  delay(10);   
+	}
+
   } // ()
 
   // .........................................................

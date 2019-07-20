@@ -251,19 +251,19 @@ public:
 	//
 	Bluefruit.Advertising.start( 0 ); 
 
-	Globales::elPuerto.escribir( "emitiriBeacon libre  Bluefruit.Advertising.start( 0 );  ");
+	Globales::elPuerto.escribir( "emitiriBeacon libre  Bluefruit.Advertising.start( 0 );  \n");
   } // ()
 
   // .........................................................
   // .........................................................
   bool anyadirServicio( ServicioEnEmisora & servicio ) {
 
-	Globales::elPuerto.escribir( " Bluefruit.Advertising.addService( servicio ); ");
+	Globales::elPuerto.escribir( " Bluefruit.Advertising.addService( servicio ); \n");
 
 	bool r = Bluefruit.Advertising.addService( servicio );
 
 	if ( ! r ) {
-	  Serial.println( " SERVICION NO AÑADIDO ");
+	  Serial.println( " SERVICION NO AÑADIDO \n");
 	}
 	
 

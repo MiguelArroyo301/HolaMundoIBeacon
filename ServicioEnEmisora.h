@@ -119,7 +119,8 @@ public:
 	void asignarTamanyoDatos( uint8_t tam ) {
 	  // no puedo escribir AUN si el constructor llama a esto: Serial.print( " (*this).laCaracteristica.setFixedLen( tam = " );
 	  // no puedo escribir AUN si el constructor llama a esto: Serial.println( tam );
-	  (*this).laCaracteristica.setFixedLen( tam );
+	  // (*this).laCaracteristica.setFixedLen( tam );
+	  (*this).laCaracteristica.setMaxLen( tam );
 	} // ()
 
   public:

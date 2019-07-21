@@ -144,10 +144,19 @@ public:
 
 	  uint16_t r = (*this).laCaracteristica.write( str );
 
-	  Serial.print( ">>>Escritos " ); Serial.print( r ); Serial.println( " bytes con write() " );
+	  // Serial.print( ">>>Escritos " ); Serial.print( r ); Serial.println( " bytes con write() " );
 
 	  return r;
 	} // ()
+
+	// .........................................................
+	// .........................................................
+	uint16_t notificarDatos( const char * str ) {
+	  
+	  uint16_t r = laCaracteristica.notify( &str[0] );
+
+	  return r;
+	} //  ()
 
 	// .........................................................
 	// .........................................................

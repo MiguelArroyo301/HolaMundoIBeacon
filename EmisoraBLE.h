@@ -104,6 +104,7 @@ public:
   }  // ()
   
   // .........................................................
+  // estaAnunciando() -> Boleano
   // .........................................................
   bool estaAnunciando() {
 	return Bluefruit.Advertising.isRunning();
@@ -194,10 +195,12 @@ public:
   // .........................................................
   // Para enviar como carga libre los últimos 21 bytes de un iBeacon (lo que normalmente sería uuid-16 major-2 minor-2 txPower-1)
   // .........................................................
-  // void emitirAnuncioIBeaconLibre( const char * carga, const uint8_t tamanyoCarga ) {
+  /*
   void emitirAnuncioIBeaconLibre( const char * carga ) {
 
 	const uint8_t tamanyoCarga = strlen( carga );
+  */
+  void emitirAnuncioIBeaconLibre( const char * carga, const uint8_t tamanyoCarga ) {
 
 	(*this).detenerAnuncio(); 
 
